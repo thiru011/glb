@@ -42,32 +42,58 @@ body{
 
 /* ── CRT OVERLAY ── */
 .crt{
-  position:fixed;inset:0;z-index:2;pointer-events:none;
+  position:fixed;
+  top:0;left:0;
+  width:100vw;height:100vh;
+  z-index:999;
+  pointer-events:none;
+  /* Scanlines — same on ALL screen sizes */
   background:repeating-linear-gradient(
     0deg,
-    rgba(0,0,0,0.03) 0px,
-    rgba(0,0,0,0.03) 1px,
+    rgba(0,0,0,0.045) 0px,
+    rgba(0,0,0,0.045) 1px,
     transparent 1px,
-    transparent 2px
+    transparent 3px
+  );
+  /* Flicker animation same on desktop & mobile */
+  animation:crtFlicker 8s ease-in-out infinite;
+}
+/* Vignette — dark edges, same on all screens */
+.crt::after{
+  content:'';
+  position:absolute;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:radial-gradient(
+    ellipse at 50% 50%,
+    transparent 55%,
+    rgba(0,0,0,0.55) 100%
   );
 }
-.crt::after{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse at center,transparent 60%,rgba(0,0,0,0.6) 100%);
+@keyframes crtFlicker{
+  0%,100%{opacity:1}
+  92%{opacity:1}
+  93%{opacity:0.85}
+  94%{opacity:1}
+  96%{opacity:0.9}
+  97%{opacity:1}
 }
 
 /* ── SCAN LINE ── */
 .scanline{
-  position:fixed;top:-100px;left:0;right:0;
-  height:100px;z-index:3;pointer-events:none;
-  background:linear-gradient(to bottom,
-    transparent,
-    rgba(255,0,255,0.03) 50%,
-    transparent
+  position:fixed;
+  top:-120px;left:0;right:0;
+  width:100vw;height:120px;
+  z-index:1000;pointer-events:none;
+  background:linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(255,0,255,0.04) 50%,
+    transparent 100%
   );
   animation:scanDown 6s linear infinite;
 }
-@keyframes scanDown{from{top:-100px}to{top:110vh}}
+@keyframes scanDown{from{top:-120px}to{top:110vh}}
 
 /* ── GLITCH NOISE ── */
 @keyframes noise{
@@ -142,6 +168,13 @@ nav::after{
   padding:100px 5% 60px;
   overflow:hidden;
 }
+.hero-glitch-wrap{
+  position:relative;
+  opacity:0;animation:fadeUp .5s .5s forwards;
+  margin-bottom:.5rem;
+  overflow:hidden;
+  width:100%;
+}
 
 /* Neon city skyline silhouette */
 .skyline{
@@ -181,18 +214,21 @@ nav::after{
 }
 .hero-name-main{
   font-family:'Bungee Inline',sans-serif;
-  font-size:clamp(1.8rem, 5vw, 4.5rem);
+  font-size:clamp(1rem,5.5vw,5.5rem);
   color:var(--white,#fff);
   line-height:.95;
-  letter-spacing:2px;
+  letter-spacing:0px;
   position:relative;
-  display:inline-block;
+  display:block;
+  white-space:nowrap;
+  width:100%;
+  overflow:hidden;
 }
 .hero-glitch-wrap .glitch-layer1,
 .hero-glitch-wrap .glitch-layer2{
   font-family:'Bungee Inline',sans-serif;
-  font-size:clamp(2.8rem,9vw,7.5rem);
-  line-height:.95;letter-spacing:2px;
+  font-size:clamp(1rem,5.5vw,5.5rem);
+  line-height:.95;letter-spacing:0px;
   position:absolute;top:0;left:0;
   white-space:nowrap;
 }
@@ -224,15 +260,7 @@ nav::after{
   93%{clip-path:inset(0 0 100% 0);transform:translateX(4px)}
 }
 
-.hero-name-accent{
-  font-family:'Bungee',sans-serif;
-  font-size:clamp(2.8rem,9vw,7.5rem);
-  color:var(--mag);
-  text-shadow:var(--glow-m);
-  line-height:.95;letter-spacing:2px;
-  display:block;
-  opacity:0;animation:fadeUp .5s .7s forwards;
-}
+.hero-name-accent{display:none;}
 
 .hero-role{
   font-family:'VT323',monospace;
@@ -716,9 +744,17 @@ section{padding:clamp(60px,8vw,100px) 5%;position:relative;z-index:10;}
    RESPONSIVE
 ══════════════════════════════ */
 @media(max-width:900px){
-  nav{padding:.9rem 1.2rem;}
+  nav{padding:.9rem 1rem;}
   .nav-links{display:none;}
-  #hero{padding:90px 5% 60px;text-align:center;align-items:center;}
+  .nav-badge{font-size:.52rem;padding:.25rem .55rem;white-space:nowrap;}
+  #hero{padding:90px 4% 60px;text-align:center;align-items:center;}
+  .hero-glitch-wrap{text-align:center;width:100%;overflow:visible;}
+  .hero-name-main,
+  .hero-glitch-wrap .glitch-layer1,
+  .hero-glitch-wrap .glitch-layer2{
+    font-size:6vw;
+    letter-spacing:-1px;
+  }
   .hero-desc{margin:0 auto 2rem;}
   .hero-btns{justify-content:center;}
   .hero-stats{justify-content:center;}
@@ -730,8 +766,12 @@ section{padding:clamp(60px,8vw,100px) 5%;position:relative;z-index:10;}
 }
 
 @media(max-width:480px){
-  .hero-name-main,.glitch-layer1,.glitch-layer2{font-size:clamp(2.5rem,12vw,3.5rem);}
-  .hero-name-accent{font-size:clamp(2.5rem,12vw,3.5rem);}
+  .hero-name-main,
+  .hero-glitch-wrap .glitch-layer1,
+  .hero-glitch-wrap .glitch-layer2{
+    font-size:5.5vw;
+    letter-spacing:-2px;
+  }
   .certs-grid{grid-template-columns:1fr;}
   .edu-grid{grid-template-columns:1fr;}
   .int-grid{grid-template-columns:1fr 1fr;}
@@ -742,6 +782,12 @@ section{padding:clamp(60px,8vw,100px) 5%;position:relative;z-index:10;}
 }
 
 @media(max-width:360px){
+  .hero-name-main,
+  .hero-glitch-wrap .glitch-layer1,
+  .hero-glitch-wrap .glitch-layer2{
+    font-size:5vw;
+    letter-spacing:-3px;
+  }
   .int-grid{grid-template-columns:1fr;}
   .hero-btns{flex-direction:column;align-items:center;}
 }
@@ -756,7 +802,7 @@ section{padding:clamp(60px,8vw,100px) 5%;position:relative;z-index:10;}
 
 <!-- NAV -->
 <nav>
-  <div class="nav-id">Portfolio</div>
+  <div class="nav-id">PORTFOLIO</div>
   <ul class="nav-links">
     <li><a href="#about">ABOUT</a></li>
     <li><a href="#tools">TOOLS</a></li>
@@ -777,12 +823,10 @@ section{padding:clamp(60px,8vw,100px) 5%;position:relative;z-index:10;}
   <div class="hero-pre">RED TEAM OPERATOR PROFILE LOADED</div>
 
   <div class="hero-glitch-wrap">
-    
     <span class="hero-name-main">GOKULALAKSHMI B</span>
     <span class="glitch-layer1">GOKULALAKSHMI B</span>
-<span class="glitch-layer2">GOKULALAKSHMI B</span>
+    <span class="glitch-layer2">GOKULALAKSHMI B</span>
   </div>
-  
 
   <div class="hero-role" id="typewriter"></div>
 
@@ -1023,7 +1067,8 @@ section{padding:clamp(60px,8vw,100px) 5%;position:relative;z-index:10;}
   <p class="contact-sub reveal">ETHICAL · SKILLED · MOTIVATED · OPEN TO RED TEAM ROLES</p>
   <div class="contact-links reveal">
     <a href="mailto:gokul.27092005@gmail.com" class="clink"><i class="fas fa-envelope"></i> gokul.27092005@gmail.com</a>
-    <a href="https://linkedin.com/in/Gokulalakshmi" target="_blank" class="clink"><i class="fab fa-linkedin"></i> LinkedIn Profile</a>
+    
+    <a href="https://linkedin.com/in/gokulalakshmi-b-b768b2290" target="_blank" class="clink"><i class="fab fa-linkedin"></i> LinkedIn Profile</a>
     <a href="https://github.com/Gokulalakshmi" target="_blank" class="clink"><i class="fab fa-github"></i> GitHub Profile</a>
   </div>
   <div class="footer-txt"><span class="fm">GOKULALAKSHMI B</span> · CYBERPUNK RED TEAM PORTFOLIO · 2025</div>
